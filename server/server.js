@@ -8,7 +8,7 @@ const { authMiddleware } = require('./utils/auth');
 const db = require('./config/connection');
 
 const routes = require('./routes');
-const GoogleBooksAPI = require('./datasources/GoogleBooksAPI');
+const dataSources = require('./datasources');
 
 //express server
 const app = express();
@@ -19,9 +19,7 @@ async function startApolloServer() {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    dataSources: () => ({
-      googleBooksAPI: new GoogleBooksAPI()
-    }),
+    dataSources,
     // context: authMiddleware
   });
 
@@ -34,10 +32,10 @@ async function startApolloServer() {
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
 
-  db.once('open', () => {
+  // db.once('open', () => {
     app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}`));
     console.log(`Use GraphQL at http://localhost:${PORT}${server.graphqlPath}`);
-  });
+  // });
 }
 
 startApolloServer();
