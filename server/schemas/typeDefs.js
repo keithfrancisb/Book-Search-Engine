@@ -2,7 +2,7 @@ const { gql } = require('apollo-server-express');
 
 const typeDefs = gql`
 type Query {
-    books: [Books]
+    books(query: String): [Books]
 }
 
 #Defining which fields are accessible from the Books model

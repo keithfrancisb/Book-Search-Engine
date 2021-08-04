@@ -17,9 +17,6 @@ const PORT = process.env.PORT || 3001;
 
 //apollo server
 async function startApolloServer() {
-  console.log(typeDefs, resolvers, 'DEX!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-
-
   const server = new ApolloServer({
     typeDefs,
     resolvers,
