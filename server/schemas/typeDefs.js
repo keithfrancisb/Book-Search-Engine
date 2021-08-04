@@ -8,7 +8,7 @@ type Query {
 #Defining which fields are accessible from the Books model
 type Books {
     _id: ID
-    authors: String
+    authors: [String]
     bookId: String
     image: String
     title: String
