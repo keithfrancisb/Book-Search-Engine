@@ -1,3 +1,5 @@
+const { AuthenticationError } = require("apollo-server-express");
+
 const resolvers = {
     Query: {
         books: async (_, {query}, {dataSources: {googleBooksAPI}}) => {
@@ -13,6 +15,15 @@ const resolvers = {
                 };
             });
         },
+        me: async (_, args, {userDataSource, user}) => {
+            if (user) {
+                const userData = await userDataSource.getUser(user);
+
+                return userData;
+            }
+
+            throw new AuthenticationError('User not logged in');
+        }
     },
 }
 
