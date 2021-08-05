@@ -32,10 +32,10 @@ async function startApolloServer() {
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
 
-  // db.once('open', () => {
+  db.once('open', () => {
     app.listen(PORT, () => console.log(`🌍 Now listening on localhost:${PORT}`));
     console.log(`Use GraphQL at http://localhost:${PORT}${server.graphqlPath}`);
-  // });
+  });
 }
 
 startApolloServer();
