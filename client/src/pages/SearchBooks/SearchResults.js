@@ -1,23 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_BOOKS } from '../../graphql/queries/getBooks';
 import { Container, Button, Card, CardColumns, Toast } from 'react-bootstrap';
-import { saveBookIds, getSavedBookIds } from '../../utils/localStorage';
 import Auth from '../../utils/auth';
 import { useSaveBook } from './customHooks/useSaveBook';
 
 export default function SearchResults({
-  bookToSearch
+  bookToSearch,
+  myBooks
 }) {
   const {data: bookSearchData} = useQuery(GET_BOOKS, {
     variables: { query: bookToSearch }
   });
 
   // create state to hold saved bookId values
-  const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
   const [showToast, setShowToast] = useState(false);
 
-  const [saveBook, {data: saveBookData, error: saveBookError}] = useSaveBook();
+  const [saveBook, { error: saveBookError}] = useSaveBook();
+  
+  // create and memoize bookIds. used for setting state of each button
+  const myBookIds = useMemo(() => myBooks.map((book) => book.bookId), [myBooks]);
 
   // create function to handle saving a book to our database
   const handleSaveBook = async (bookId) => {
@@ -25,22 +27,14 @@ export default function SearchResults({
     const bookToSave = bookSearchData.books.find((book) => book.bookId === bookId);
 
     saveBook(bookToSave);
-
-    if (saveBookData) {
-      // if book successfully saves to user's account, save book id to state
-      setSavedBookIds([...savedBookIds, bookToSave.bookId]);
-    }
   };
 
   useEffect(() => {
     if (saveBookError) {
       setShowToast(true);
     }
-    
-    // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
-    // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
-    return () => saveBookIds(savedBookIds);
-  }, [saveBookError, savedBookIds]);
+  }, [saveBookError]);
+
 
   return (
     <Container>
@@ -62,10 +56,10 @@ export default function SearchResults({
                 <Card.Text>{book.description}</Card.Text>
                 {Auth.loggedIn() && (
                   <Button
-                    disabled={savedBookIds?.some((savedBookId) => savedBookId === book.bookId)}
+                    disabled={myBookIds.some((savedBookId) => savedBookId === book.bookId)}
                     className='btn-block btn-info'
                     onClick={() => handleSaveBook(book.bookId)}>
-                    {savedBookIds?.some((savedBookId) => savedBookId === book.bookId)
+                    {myBookIds.some((savedBookId) => savedBookId === book.bookId)
                       ? 'This book has already been saved!'
                       : 'Save this Book!'}
                   </Button>
