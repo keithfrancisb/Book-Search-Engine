@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 
-import { createUser } from '../utils/API';
-import Auth from '../utils/auth';
+import { useSignupUser } from './customHooks/useSignupUser';
 
 const SignupForm = () => {
   // set initial form state
@@ -11,6 +10,8 @@ const SignupForm = () => {
   const [validated] = useState(false);
   // set state for alert
   const [showAlert, setShowAlert] = useState(false);
+
+  const [signupUser, {data, error}] = useSignupUser();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -27,27 +28,22 @@ const SignupForm = () => {
       event.stopPropagation();
     }
 
-    try {
-      const response = await createUser(userFormData);
+    signupUser(userFormData);
 
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
+    if (data) {
+      setUserFormData({
+        username: '',
+        email: '',
+        password: '',
+      });
+    }
+  };
 
-      const { token, user } = await response.json();
-      console.log(user);
-      Auth.login(token);
-    } catch (err) {
-      console.error(err);
+  useEffect(() => {
+    if (error) {
       setShowAlert(true);
     }
-
-    setUserFormData({
-      username: '',
-      email: '',
-      password: '',
-    });
-  };
+  })
 
   return (
     <>
