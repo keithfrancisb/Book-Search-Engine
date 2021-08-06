@@ -21,7 +21,7 @@ async function startApolloServer() {
     typeDefs,
     resolvers,
     dataSources,
-    // context: authMiddleware
+    context: authMiddleware
   });
 
   await server.start();
