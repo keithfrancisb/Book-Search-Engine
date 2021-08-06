@@ -43,7 +43,7 @@ const SignupForm = () => {
     if (error) {
       setShowAlert(true);
     }
-  })
+  }, [error]);
 
   return (
     <>
