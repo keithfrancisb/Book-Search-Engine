@@ -16,7 +16,7 @@ export default function SearchResults({
   // create state to hold saved bookId values
   const [showToast, setShowToast] = useState(false);
 
-  const [saveBook, { error: saveBookError}] = useSaveBook();
+  const [saveBook, {error: saveBookError}] = useSaveBook();
   
   // create and memoize bookIds. used for setting state of each button
   const myBookIds = useMemo(() => myBooks.map((book) => book.bookId), [myBooks]);
@@ -33,7 +33,7 @@ export default function SearchResults({
     if (saveBookError) {
       setShowToast(true);
     }
-  }, [saveBookError]);
+  }, [saveBookError, setShowToast]);
 
 
   return (

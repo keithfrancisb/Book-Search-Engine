@@ -16,7 +16,7 @@ const SavedBooks = ({myBooks}) => {
     if (error) {
       setShowToast(true);
     }
-  })
+  }, [error, setShowToast]);
 
   return (
     <>
