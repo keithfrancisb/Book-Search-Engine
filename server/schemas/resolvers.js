@@ -18,11 +18,13 @@ const resolvers = {
             });
         },
         me: async (_, args, context) => {
-            const user = await User.findOne({
-                $or: [{ username: 'kfb' }, { email: 'kfb@mail.com' }],
-            });
-
-            return user;
+            if (context.user) {
+                const user = await User.findOne(context.user);
+    
+                return user;
+            } else {
+                throw new AuthenticationError('User is not logged in!');
+            }
         }
     },
     Mutation: {
