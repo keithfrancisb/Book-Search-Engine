@@ -19,8 +19,9 @@ export const useLoginUser = () => {
   }
 
   if (data) {
-    console.log(data.user);
-    Auth.login(data.token);
+    const {user, token} = data.loginUser;
+    console.log(user);
+    Auth.login(token);
   }
 
   return [loginUser, {data, loading, error}];
