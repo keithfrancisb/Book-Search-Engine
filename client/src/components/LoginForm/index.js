@@ -2,8 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 
-// import { loginUser } from '../../utils/API';
-// import Auth from '../../utils/auth';
 import { useLoginUser } from './customHooks/useLoginUser';
 
 const LoginForm = () => {
@@ -37,7 +35,6 @@ const LoginForm = () => {
         password: '',
       });
     }
-
   };
 
   useEffect(() => {
@@ -45,7 +42,6 @@ const LoginForm = () => {
       setShowAlert(true);
     }
   }, [error]);
-
 
   return (
     <>
