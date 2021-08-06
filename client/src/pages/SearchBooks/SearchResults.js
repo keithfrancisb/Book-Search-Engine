@@ -1,62 +1,56 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_BOOKS } from '../../graphql/queries/getBooks';
-import { saveBook } from '../../utils/API';
-import { Container, Button, Card, CardColumns } from 'react-bootstrap';
+import { Container, Button, Card, CardColumns, Toast } from 'react-bootstrap';
 import { saveBookIds, getSavedBookIds } from '../../utils/localStorage';
 import Auth from '../../utils/auth';
+import { useSaveBook } from './customHooks/useSaveBook';
 
 export default function SearchResults({
   bookToSearch
 }) {
-  const {data} = useQuery(GET_BOOKS, {
+  const {data: bookSearchData} = useQuery(GET_BOOKS, {
     variables: { query: bookToSearch }
   });
 
   // create state to hold saved bookId values
   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
+  const [showToast, setShowToast] = useState(false);
+
+  const [saveBook, {data: saveBookData, error: saveBookError}] = useSaveBook();
 
   // create function to handle saving a book to our database
   const handleSaveBook = async (bookId) => {
     // find the book in `searchedBooks` state by the matching id
-    const bookToSave = data.books.find((book) => book.bookId === bookId);
+    const bookToSave = bookSearchData.books.find((book) => book.bookId === bookId);
 
-    // get token
-    const token = Auth.loggedIn() ? Auth.getToken() : null;
+    saveBook(bookToSave);
 
-    if (!token) {
-      return false;
-    }
-
-    try {
-      const response = await saveBook(bookToSave, token);
-
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
+    if (saveBookData) {
       // if book successfully saves to user's account, save book id to state
       setSavedBookIds([...savedBookIds, bookToSave.bookId]);
-    } catch (err) {
-      console.error(err);
     }
   };
 
-  // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
-  // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
   useEffect(() => {
+    if (saveBookError) {
+      setShowToast(true);
+    }
+    
+    // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
+    // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
     return () => saveBookIds(savedBookIds);
-  });
+  }, [saveBookError, savedBookIds]);
 
   return (
     <Container>
       <h2>
-        {data?.books.length
-          ? `Viewing ${data.books.length} results:`
+        {bookSearchData?.books.length
+          ? `Viewing ${bookSearchData.books.length} results:`
           : 'Search for a book to begin'}
       </h2>
       <CardColumns>
-        {data?.books.map((book) => {
+        {bookSearchData?.books.map((book) => {
           return (
             <Card key={book.bookId} border='dark'>
               {book.image ? (
@@ -81,6 +75,14 @@ export default function SearchResults({
           );
         })}
       </CardColumns>
+      <Toast onClose={() => setShowToast(false)} show={showToast}>
+        <Toast.Header>
+          <strong>Oh no!</strong>
+        </Toast.Header>
+        <Toast.Body className="text-white">
+          Failed to save the book. Please try again later.
+        </Toast.Body>
+      </Toast>
     </Container>
   )
 }
