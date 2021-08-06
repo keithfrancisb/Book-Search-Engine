@@ -7,6 +7,7 @@ export const GET_BOOKS = gql`
       authors
       image
       title
+      description
     }
   }
 `;

@@ -8,6 +8,7 @@ type Book {
     bookId: String
     image: String
     title: String
+    description: String
 }
 
 type User {

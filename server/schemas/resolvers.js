@@ -14,6 +14,7 @@ const resolvers = {
                     bookId: book.volumeInfo.industryIdentifiers[0].identifier,
                     image: book.volumeInfo.imageLinks.thumbnail,
                     title: book.volumeInfo.title,
+                    description: book.volumeInfo.description
                 };
             });
         },
