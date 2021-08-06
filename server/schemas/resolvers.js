@@ -61,6 +61,17 @@ const resolvers = {
             } else {
                 throw new AuthenticationError('User is not logged in');
             }
+        },
+        unsaveBook: async (_, {bookId}, context) => {
+            if (context.user) {
+                return await User.findOneAndUpdate(
+                    { _id: context.user._id },
+                    { $pull: { savedBooks: { bookId } } },
+                    { new: true }
+                );
+            } else {
+                throw new AuthenticationError('User is not logged in');
+            }
         }
     }
 }
